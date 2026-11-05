@@ -1,0 +1,32 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+// SPDX-FileCopyrightText: 2026 Andelib Taref Srizon <andelibtarefsrizon@gmail.com>
+
+#pragma once
+
+#include <QThreadPool>
+
+/**
+ * Pool for background work (PDF and comic pages, PDF layouts, folder listings, LibreOffice detection).
+ *
+ * Unlike QThreadPool::globalInstance(), the application doesn't wait for it on exit, so
+ * quitting can't hang on a long uninterruptible job such as decompressing a huge tarball.
+ * main() gives running jobs a short grace period and then exits anyway.
+ */
+inline QThreadPool *workerPool()
+{
+    static auto *pool = new QThreadPool; // intentionally leaked; see above
+    return pool;
+}
+
+/// One thread for libarchive scans (archive listings, comic layouts): skipping a large entry of a
+/// compressed archive means decompressing it, which can't be interrupted, so queued scans must
+/// neither run at once nor starve page rendering.
+inline QThreadPool *archivePool()
+{
+    static auto *pool = [] {
+        auto *p = new QThreadPool; // intentionally leaked, like workerPool()
+        p->setMaxThreadCount(1);
+        return p;
+    }();
+    return pool;
+}

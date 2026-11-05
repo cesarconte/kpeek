@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SPDX-License-Identifier: CC0-1.0
+SPDX-FileCopyrightText: 2026 Andelib Taref Srizon <andelibtarefsrizon@gmail.com>
+-->
+<component type="desktop-application">
+  <id>io.github.iamandelib.kpeek</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0-or-later</project_license>
+  <name>KPeek</name>
+  <summary>Quick file previews for Dolphin</summary>
+  <developer id="io.github.iamandelib">
+    <name>Andelib Taref Srizon</name>
+  </developer>
+  <description>
+    <p>
+      KPeek brings Quick Look to KDE's file manager. Select a file in Dolphin, press Meta+Space,
+      and a preview appears. Use the arrow keys to move through the folder, and press the
+      shortcut again to close it.
+    </p>
+    <p>It previews:</p>
+    <ul>
+      <li>Images, including HEIC, AVIF, JPEG XL, SVG and animated GIF and WebP</li>
+      <li>PDF documents and comic books (CBZ, CBR, CB7, CBT)</li>
+      <li>Office documents, from the preview picture stored in the document</li>
+      <li>Video and audio</li>
+      <li>Source code and text with syntax highlighting, and rendered Markdown</li>
+      <li>3D models (glTF, OBJ, STL, 3MF)</li>
+      <li>The contents of zip, tar, 7z, RAR, ISO and other archives</li>
+      <li>Fonts</li>
+    </ul>
+    <p>
+      Everything else shows Dolphin's thumbnail and the file's details. KPeek opens files read-only,
+      never accesses the network, and stays light on memory.
+    </p>
+    <p>
+      To open KPeek from Dolphin, install the "KPeek" service menu from Dolphin's
+      Settings, Configure Dolphin, Context Menu, Download New Services, or follow the
+      instructions on the project page.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.iamandelib.kpeek.desktop</launchable>
+  <url type="homepage">https://github.com/IamAndelib/KPeek</url>
+  <url type="bugtracker">https://github.com/IamAndelib/KPeek/issues</url>
+  <url type="vcs-browser">https://github.com/IamAndelib/KPeek</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Previewing a photo</caption>
+      <image>https://raw.githubusercontent.com/IamAndelib/KPeek/main/docs/screenshots/image.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Previewing a PDF</caption>
+      <image>https://raw.githubusercontent.com/IamAndelib/KPeek/main/docs/screenshots/pdf.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Source code with syntax highlighting</caption>
+      <image>https://raw.githubusercontent.com/IamAndelib/KPeek/main/docs/screenshots/code.png</image>
+    </screenshot>
+  </screenshots>
+  <categories>
+    <category>Utility</category>
+  </categories>
+  <content_rating type="oars-1.1"/>
+  <branding>
+    <color type="primary" scheme_preference="light">#93cee9</color>
+    <color type="primary" scheme_preference="dark">#1d4f6b</color>
+  </branding>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+  <supports>
+    <control>keyboard</control>
+    <control>pointing</control>
+  </supports>
+  <releases>
+    <release version="1.0.8" date="2026-10-11">
+      <description>
+        <ul>
+          <li>The preview follows a light/dark theme switch while it is open.</li>
+          <li>Uninstalling also forgets whether Peek was hidden in Dolphin's context menu settings, so a reinstall shows it again.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.0.7" date="2026-10-11">
+      <description>
+        <p>The installer sets the Meta+Space shortcut in Dolphin, unless another action already uses it. Uninstalling removes it.</p>
+      </description>
+    </release>
+    <release version="1.0.6" date="2026-10-11">
+      <description>
+        <p>Markdown files with HTML images, such as the centred logos and screenshots of many READMEs, now show in full.</p>
+      </description>
+    </release>
+    <release version="1.0.5" date="2026-10-11">
+      <description>
+        <p>Previews files in the Trash. Pressing the shortcut with nothing selected no longer shows an error.</p>
+      </description>
+    </release>
+    <release version="1.0.4" date="2026-10-11">
+      <description>
+        <p>Security and robustness release.</p>
+        <ul>
+          <li>A Markdown file can no longer freeze KPeek or read devices through its images.</li>
+          <li>KPeek never runs Ghostscript, even on PostScript disguised as another file type.</li>
+          <li>3D models count the files they reference before loading on their own.</li>
+          <li>Files under /usr and /etc show the system's own file, not the sandbox's.</li>
+          <li>The installer checks the download against the release's checksum.</li>
+          <li>Starts a little faster.</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.0.3" date="2026-10-11">
+      <description>
+        <p>Resizing from the top edge and top corners now works on Wayland too.</p>
+      </description>
+    </release>
+    <release version="1.0.2" date="2026-10-11">
+      <description>
+        <p>The window can be resized from its top edge and top corners too.</p>
+      </description>
+    </release>
+    <release version="1.0.1" date="2026-10-11">
+      <description>
+        <ul>
+          <li>KPeek quits when you close a preview: nothing stays running in the background</li>
+          <li>A borderless preview window: drag the header bar to move it, drag its edges to resize it</li>
+        </ul>
+      </description>
+    </release>
+    <release version="1.0.0" date="2026-10-11">
+      <description>
+        <p>First stable release.</p>
+        <ul>
+          <li>Previews images, PDFs, comic books, office documents, video and audio, text and code, Markdown, 3D models, archives and fonts</li>
+          <li>Zoom with Ctrl and the mouse wheel or the header buttons, and pan by dragging</li>
+          <li>Moves through the selection or the whole folder with the arrow keys</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>

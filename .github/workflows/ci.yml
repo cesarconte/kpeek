@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Same distribution as the recommended development container.
+    container: registry.fedoraproject.org/fedora:44
+    steps:
+      - name: Install dependencies
+        run: >
+          dnf install -y --setopt=install_weak_deps=False
+          git gcc-c++ cmake ninja-build extra-cmake-modules clang-tools-extra git-clang-format
+          qt6-qtbase-devel qt6-qtdeclarative-devel qt6-qtmultimedia-devel qt6-qtsvg-devel
+          kf6-kcoreaddons-devel kf6-ki18n-devel kf6-kcrash-devel kf6-kdbusaddons-devel
+          kf6-kwindowsystem-devel libarchive-devel dbus-devel qt6-qtquick3d-devel kf6-kirigami-devel kf6-syntax-highlighting-devel
+          kf6-qqc2-desktop-style poppler-qt6-devel appstream desktop-file-utils shellcheck reuse
+          libasan libubsan
+
+      - uses: actions/checkout@v5
+
+      - name: Configure
+        run: cmake -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/tmp/prefix
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Install
+        run: cmake --install build
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+      # The parsers read untrusted files: run the tests again with AddressSanitizer and UBSan.
+      - name: Test with sanitizers
+        run: |
+          cmake -B build-asan -G Ninja -DCMAKE_BUILD_TYPE=Debug -DECM_ENABLE_SANITIZERS='address;undefined'
+          cmake --build build-asan
+          ASAN_OPTIONS=detect_leaks=0 UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 ctest --test-dir build-asan --output-on-failure
+
+      - name: Check formatting
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          cmake --build build --target clang-format
+          git diff --exit-code
+
+      - name: Validate metadata and scripts
+        run: |
+          desktop-file-validate src/io.github.iamandelib.kpeek.desktop
+          appstreamcli validate --no-net src/io.github.iamandelib.kpeek.metainfo.xml
+          shellcheck scripts/*.sh packaging/kde-store/*.sh
+          reuse lint

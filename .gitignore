@@ -1,0 +1,11 @@
+/build*/
+/.flatpak-builder/
+/flatpak-repo/
+/dist/
+.cache/
+compile_commands.json
+*.user
+.clangd
+/.claude/
+/flatpak-build/
+/kpeek.flatpak

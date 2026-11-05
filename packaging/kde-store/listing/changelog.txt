@@ -1,0 +1,36 @@
+1.0.8
+- The preview follows a light/dark theme switch while it is open.
+- Uninstalling also forgets whether Peek was hidden in Dolphin's context menu settings, so a reinstall shows it again.
+
+1.0.7
+- The installer sets the Meta+Space shortcut in Dolphin, unless another action already uses it. Uninstalling removes it.
+
+1.0.6
+- Markdown files with HTML images, such as the centred logos and screenshots of many READMEs, now show in full.
+
+1.0.5
+- Previews files in the Trash.
+- Pressing the shortcut with nothing selected no longer shows an error.
+
+1.0.4: security and robustness
+- A Markdown file can no longer freeze KPeek or read devices through its images.
+- KPeek never runs Ghostscript, even on PostScript disguised as another file type.
+- 3D models count the files they reference before loading on their own.
+- Files under /usr and /etc show the system's own file, not the sandbox's.
+- The installer checks the download against the release's checksum.
+- Starts a little faster.
+
+1.0.3
+- Resizing from the top edge and top corners now works on Wayland too.
+
+1.0.2
+- The window can be resized from its top edge and top corners too.
+
+1.0.1
+- KPeek quits when you close a preview: nothing stays running in the background.
+- A borderless preview window: drag the header bar to move it, drag its edges to resize it.
+
+1.0.0: first stable release.
+- Previews images, PDFs, comic books, office documents, video and audio, text and code, Markdown, 3D models, archives and fonts.
+- Arrow keys move through the selection or the whole folder; zoom with Ctrl and the mouse wheel or the header buttons; drag to pan.
+- Works with Dolphin on any desktop and distribution with Flatpak; opens files read-only, never accesses the network, runs sandboxed.
