@@ -17,12 +17,14 @@
 #include <KLocalizedString>
 
 #include <QApplication>
+#include <QClipboard>
 #include <QCommandLineParser>
 #include <QDeadlineTimer>
 #include <QDir>
 #include <QFile>
 #include <QIcon>
 #include <QImageReader>
+#include <QMimeData>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QQmlApplicationEngine>
@@ -147,11 +149,24 @@ int main(int argc, char *argv[])
 
     QCommandLineParser parser;
     about.setupCommandLine(&parser);
+    parser.addOption(QCommandLineOption({QStringLiteral("a"), QStringLiteral("active")}, i18nc("@info:shell", "Preview the currently active or selected file.")));
     parser.addPositionalArgument(QStringLiteral("files"), i18nc("@info:shell", "Files or folders to preview."), QStringLiteral("[files...]"));
     parser.process(app);
     about.processCommandLine(&parser);
 
-    const QList<QUrl> urls = urlsFromArguments(parser, app.arguments(), QDir::currentPath());
+    QList<QUrl> urls = urlsFromArguments(parser, app.arguments(), QDir::currentPath());
+    if (urls.isEmpty() || parser.isSet(QStringLiteral("active"))) {
+        const QMimeData *mime = QApplication::clipboard()->mimeData();
+        if (mime && mime->hasUrls() && !mime->urls().isEmpty()) {
+            urls = mime->urls();
+        } else if (mime && mime->hasText()) {
+            const QString text = mime->text().trimmed();
+            if (text.startsWith(QLatin1String("file://")) || (text.startsWith(QLatin1Char('/')) && QFile::exists(text))) {
+                urls.append(QUrl::fromUserInput(text, QDir::currentPath(), QUrl::AssumeLocalFile));
+            }
+        }
+    }
+
     if (urls.isEmpty()) {
         parser.showHelp(1);
     }
