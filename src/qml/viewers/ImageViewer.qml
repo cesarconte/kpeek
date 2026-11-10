@@ -89,7 +89,7 @@ Rectangle {
         flick.contentY = Math.max(0, Math.min(fy * after.height + (contentHeight - after.height) / 2 - flick.height / 2, contentHeight - flick.height));
     }
 
-    color: Kirigami.Theme.backgroundColor
+    color: "transparent"
 
     Flickable {
         id: flick

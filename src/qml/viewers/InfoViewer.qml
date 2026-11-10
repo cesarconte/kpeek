@@ -12,7 +12,7 @@ import io.github.iamandelib.kpeek
 Rectangle {
     id: root
 
-    color: Kirigami.Theme.backgroundColor
+    color: "transparent"
 
     ColumnLayout {
         anchors.centerIn: parent
@@ -48,6 +48,7 @@ Rectangle {
             wrapMode: Text.Wrap
             horizontalAlignment: Text.AlignHCenter
             Layout.fillWidth: true
+            Layout.minimumWidth: 0
         }
 
         Kirigami.FormLayout {

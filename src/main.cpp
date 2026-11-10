@@ -117,6 +117,8 @@ int main(int argc, char *argv[])
     if (isFlatpak()) {
         linkHostKdeglobals(); // before anything reads KConfig
     }
+    // Set default alpha buffer before QApplication for Wayland transparency and rounded blur.
+    QQuickWindow::setDefaultAlphaBuffer(true);
     // QApplication rather than QGuiApplication so Kirigami picks up the desktop style and platform theme.
     QApplication app(argc, argv); // sets the C locale from the environment
     ensureUtf8Locale();
@@ -178,6 +180,8 @@ int main(int argc, char *argv[])
 
     LocalOnlyNetworkAccessManagerFactory networkFactory; // must outlive the engine
     QQmlApplicationEngine engine;
+    engine.addImportPath(QDir::homePath() + QStringLiteral("/.local/lib/qt6/qml"));
+    engine.addImportPath(QStringLiteral("/usr/lib/qt6/qml"));
     KLocalization::setupLocalizedContext(&engine);
     engine.setNetworkAccessManagerFactory(&networkFactory);
     engine.addImageProvider(QLatin1String(PdfPageProvider::Id), new PdfPageProvider);

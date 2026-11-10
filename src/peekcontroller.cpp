@@ -201,10 +201,11 @@ void PeekController::raiseWindow()
     // which lets Wayland compositors give the already-running window focus.
     KWindowSystem::updateStartupId(m_window);
     m_window->show();
-    if (!m_shadow.isCreated()) {
-        m_shadow.setWindow(m_window);
-        m_shadow.create(); // needs the native window, which exists once shown
-    }
+    // Compositor-level square KWindowShadow is disabled to ensure clean squircle rounded corners without rectangular shadow clipping.
+    // if (!m_shadow.isCreated()) {
+    //     m_shadow.setWindow(m_window);
+    //     m_shadow.create(); // needs the native window, which exists once shown
+    // }
     m_window->raise();
     KWindowSystem::activateWindow(m_window);
 }
