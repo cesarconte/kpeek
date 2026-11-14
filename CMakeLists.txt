@@ -9,6 +9,7 @@ set(QT_MIN_VERSION "6.8.0")
 set(KF_MIN_VERSION "6.10.0")
 set(KPEEK_APP_ID "io.github.iamandelib.kpeek")
 
+set(QT_MAJOR_VERSION 6)
 find_package(ECM ${KF_MIN_VERSION} REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 

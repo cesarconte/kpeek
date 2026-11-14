@@ -40,14 +40,18 @@ if [ -d "${DESKTOP_PLASMOID_DIR}" ]; then
     echo "  ✓ Integración de FolderView para el Escritorio de Plasma activa en ${DESKTOP_PLASMOID_DIR}"
 fi
 
-# 6. Configurar atajo de Dolphin (Space / Meta+Space)
-DOLPHIN6_RC="${HOME}/.local/share/kxmlgui6/dolphin/dolphinui.rc"
-if [ -f "$DOLPHIN6_RC" ]; then
-    if ! grep -q "servicemenu_kpeek.desktop::peek" "$DOLPHIN6_RC"; then
-        sed -i '/<ActionProperties scheme="Default">/a \  <Action name="servicemenu_kpeek.desktop::peek" shortcut="Space; Meta+Space"/>' "$DOLPHIN6_RC"
+# 6. Configurar atajo de Dolphin (Space / Meta+Space) y liberar Espacio de toggle_selection_mode
+for DOLPHIN_RC in "${HOME}/.local/share/kxmlgui5/dolphin/dolphinui.rc" "${HOME}/.local/share/kxmlgui6/dolphin/dolphinui.rc"; do
+    if [ -f "$DOLPHIN_RC" ] && grep -q '<ActionProperties scheme="Default">' "$DOLPHIN_RC"; then
+        if ! grep -q 'name="toggle_selection_mode"' "$DOLPHIN_RC"; then
+            sed -i '/<ActionProperties scheme="Default">/a \  <Action name="toggle_selection_mode" shortcut=""/>' "$DOLPHIN_RC"
+        fi
+        if ! grep -q "servicemenu_kpeek.desktop::peek" "$DOLPHIN_RC"; then
+            sed -i '/<Action name="toggle_selection_mode" shortcut=""\/>/a \  <Action name="servicemenu_kpeek.desktop::peek" shortcut="Space; Meta+Space"/>' "$DOLPHIN_RC"
+        fi
     fi
-    echo "  ✓ Atajo Space / Meta+Space configurado en Dolphin"
-fi
+done
+echo "  ✓ Atajo Space / Meta+Space configurado en Dolphin (sin conflicto con toggle_selection_mode)"
 
 # 7. Registrar atajo global Meta+Space en KDE Plasma 6
 if command -v kwriteconfig6 >/dev/null 2>&1; then
