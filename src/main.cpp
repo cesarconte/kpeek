@@ -180,7 +180,6 @@ int main(int argc, char *argv[])
 
     LocalOnlyNetworkAccessManagerFactory networkFactory; // must outlive the engine
     QQmlApplicationEngine engine;
-    engine.addImportPath(QDir::homePath() + QStringLiteral("/.local/lib/qt6/qml"));
     engine.addImportPath(QStringLiteral("/usr/lib/qt6/qml"));
     KLocalization::setupLocalizedContext(&engine);
     engine.setNetworkAccessManagerFactory(&networkFactory);

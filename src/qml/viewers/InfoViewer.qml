@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // SPDX-FileCopyrightText: 2026 Andelib Taref Srizon <andelibtarefsrizon@gmail.com>
+// SPDX-FileCopyrightText: 2026 CachyOS UI contributors
 
 import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
-import org.kde.kirigami as Kirigami
+import CachyOS.UI
 import io.github.iamandelib.kpeek
 
 // Fallback for folders and files without a dedicated viewer: a summary card. When Dolphin has made a
@@ -16,8 +17,8 @@ Rectangle {
 
     ColumnLayout {
         anchors.centerIn: parent
-        width: Math.min(parent.width - Kirigami.Units.gridUnit * 4, Kirigami.Units.gridUnit * 24)
-        spacing: Kirigami.Units.largeSpacing
+        width: Math.min(parent.width - 64, 384)
+        spacing: CachyTheme.spacingLarge
 
         Image {
             id: thumbnail
@@ -31,17 +32,16 @@ Rectangle {
             Layout.preferredHeight: Math.min(implicitHeight, root.height * 0.5)
         }
 
-        Kirigami.Icon {
+        CachyIcon {
             visible: !thumbnail.visible
-            source: PeekController.iconName
+            name: PeekController.iconName
             fallback: PeekController.isFolder ? "folder" : "unknown"
             Layout.alignment: Qt.AlignHCenter
-            // Smaller in short windows, so the details below stay visible.
-            Layout.preferredWidth: Math.min(Kirigami.Units.iconSizes.enormous, root.height / 4)
-            Layout.preferredHeight: Layout.preferredWidth
+            size: Math.min(96, Math.max(32, Math.round(root.height / 4)))
+            colored: false
         }
 
-        Kirigami.Heading {
+        CachyHeading {
             text: PeekController.fileName
             textFormat: Text.PlainText
             level: 2
@@ -51,22 +51,52 @@ Rectangle {
             Layout.minimumWidth: 0
         }
 
-        Kirigami.FormLayout {
+        GridLayout {
+            columns: 2
+            columnSpacing: CachyTheme.spacingMedium
+            rowSpacing: CachyTheme.spacingSmall
             Layout.alignment: Qt.AlignHCenter
 
-            QQC2.Label {
-                Kirigami.FormData.label: i18nc("@label", "Type:")
+            Text {
+                text: i18nc("@label", "Type:")
+                font.pixelSize: 12
+                color: CachyTheme.textSecondary
+                Layout.alignment: Qt.AlignRight
+            }
+            Text {
                 text: PeekController.mimeComment
+                font.pixelSize: 12
+                color: CachyTheme.textPrimary
             }
-            QQC2.Label {
-                Kirigami.FormData.label: PeekController.isFolder ? i18nc("@label", "Contains:") : i18nc("@label", "Size:")
+
+            Text {
+                text: PeekController.isFolder ? i18nc("@label", "Contains:") : i18nc("@label", "Size:")
+                font.pixelSize: 12
+                color: CachyTheme.textSecondary
+                Layout.alignment: Qt.AlignRight
+                visible: sizeValue.visible
+            }
+            Text {
+                id: sizeValue
                 text: PeekController.sizeText
-                visible: text.length > 0 // remote files
+                font.pixelSize: 12
+                color: CachyTheme.textPrimary
+                visible: text.length > 0
             }
-            QQC2.Label {
-                Kirigami.FormData.label: i18nc("@label", "Modified:")
+
+            Text {
+                text: i18nc("@label", "Modified:")
+                font.pixelSize: 12
+                color: CachyTheme.textSecondary
+                Layout.alignment: Qt.AlignRight
+                visible: modValue.visible
+            }
+            Text {
+                id: modValue
                 text: PeekController.modified.toLocaleString(Qt.locale(), Locale.ShortFormat)
-                visible: !isNaN(PeekController.modified) // remote files
+                font.pixelSize: 12
+                color: CachyTheme.textPrimary
+                visible: !isNaN(PeekController.modified)
             }
         }
     }

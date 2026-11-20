@@ -2,7 +2,6 @@
 // SPDX-FileCopyrightText: 2026 Andelib Taref Srizon <andelibtarefsrizon@gmail.com>
 
 import QtQuick
-import org.kde.kirigami as Kirigami
 
 /**
  * Wheel, drag and key handling shared by all viewers. It sits on top of the viewer.
@@ -46,7 +45,7 @@ Item {
         if (!flickable) {
             return;
         }
-        const line = Kirigami.Units.gridUnit * 3;
+        const line = 48;
         const page = flickable.height * 0.9;
         let y = flickable.contentY;
         switch (event.key) {

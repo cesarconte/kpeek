@@ -4,7 +4,7 @@
 import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
-import org.kde.kirigami as Kirigami
+import CachyOS.UI
 import io.github.iamandelib.kpeek
 
 // Plain text and source code with syntax highlighting.
@@ -14,7 +14,7 @@ Rectangle {
     property real zoom: 1.0
     readonly property Flickable scrollTarget: scroll.contentItem as Flickable
 
-    color: Kirigami.Theme.backgroundColor
+    color: CachyPalette.sheetBackground
 
     TextLoader {
         id: loader
@@ -25,11 +25,11 @@ Rectangle {
         anchors.fill: parent
         spacing: 0
 
-        Kirigami.InlineMessage {
+        CachyInlineMessage {
             Layout.fillWidth: true
-            Layout.margins: Kirigami.Units.smallSpacing
+            Layout.margins: CachyTheme.spacingSmall
             visible: loader.truncated
-            type: Kirigami.MessageType.Information
+            messageType: "information"
             text: i18nc("@info %1 is a size such as 2 MiB", "This file is large; only the first %1 are shown.", Qt.locale().formattedDataSize(loader.maxBytes))
         }
 
@@ -38,8 +38,6 @@ Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
-            // Not the TextArea itself: as a ScrollView's direct child it scrolls to its cursor (at the
-            // top) whenever its layout changes, so zooming or resizing jumped back to the first line.
             Item {
                 implicitWidth: source.wrap ? scroll.availableWidth : source.implicitWidth
                 implicitHeight: source.implicitHeight
@@ -60,11 +58,11 @@ Rectangle {
         flickable: root.scrollTarget
     }
 
-    Kirigami.PlaceholderMessage {
+    CachyPlaceholderMessage {
         anchors.centerIn: parent
-        width: parent.width - Kirigami.Units.gridUnit * 4
+        width: parent.width - 64
         visible: loader.failed || loader.text.length === 0
-        icon.name: loader.failed ? "dialog-error" : PeekController.iconName
+        iconName: loader.failed ? "dialog-error" : PeekController.iconName
         text: loader.failed ? i18nc("@info", "This file could not be read") : i18nc("@info", "This file is empty")
     }
 }

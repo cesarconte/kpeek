@@ -6,7 +6,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
-import org.kde.kirigami as Kirigami
+import CachyOS.UI
 import io.github.iamandelib.kpeek
 
 // Font specimen: the family name, the alphabet and a pangram at several sizes.
@@ -16,7 +16,7 @@ Rectangle {
     property real zoom: 1.0
     readonly property Flickable scrollTarget: scroll.contentItem as Flickable
 
-    color: Kirigami.Theme.backgroundColor
+    color: CachyPalette.sheetBackground
 
     FontFile {
         id: loader
@@ -25,57 +25,59 @@ Rectangle {
 
     QQC2.ScrollView {
         id: scroll
-        contentWidth: availableWidth // samples elide; never scroll sideways
+        contentWidth: availableWidth
         anchors.fill: parent
         visible: !loader.failed
 
         ColumnLayout {
             width: scroll.availableWidth
-            spacing: Kirigami.Units.largeSpacing
+            spacing: CachyTheme.spacingLarge
 
-            Kirigami.Heading {
+            CachyHeading {
                 text: [loader.font.family, loader.font.styleName].filter(s => s.length > 0).join(" ")
-                textFormat: Text.PlainText // names come from the font file
+                textFormat: Text.PlainText
                 level: 1
                 wrapMode: Text.Wrap
                 Layout.fillWidth: true
-                Layout.margins: Kirigami.Units.gridUnit
+                Layout.margins: CachyTheme.marginCard
             }
 
-            QQC2.Label {
+            Text {
                 text: "ABCDEFGHIJKLMNOPQRSTUVWXYZ\nabcdefghijklmnopqrstuvwxyz\n0123456789 .,;:!?&@#%()[]{}"
                 font.family: loader.font.family
                 font.styleName: loader.font.styleName
                 font.pointSize: 18 * root.zoom
+                color: CachyTheme.textPrimary
                 wrapMode: Text.Wrap
                 Layout.fillWidth: true
-                Layout.leftMargin: Kirigami.Units.gridUnit
-                Layout.rightMargin: Kirigami.Units.gridUnit
+                Layout.leftMargin: CachyTheme.marginCard
+                Layout.rightMargin: CachyTheme.marginCard
             }
 
             Repeater {
                 model: [10, 14, 20, 28, 40, 56]
 
-                QQC2.Label {
+                Text {
                     required property int modelData
                     text: i18nc("@info font sample pangram", "The quick brown fox jumps over the lazy dog")
                     font.family: loader.font.family
                     font.styleName: loader.font.styleName
                     font.pointSize: modelData * root.zoom
+                    color: CachyTheme.textPrimary
                     elide: Text.ElideRight
                     Layout.fillWidth: true
-                    Layout.leftMargin: Kirigami.Units.gridUnit
-                    Layout.rightMargin: Kirigami.Units.gridUnit
+                    Layout.leftMargin: CachyTheme.marginCard
+                    Layout.rightMargin: CachyTheme.marginCard
                 }
             }
         }
     }
 
-    Kirigami.PlaceholderMessage {
+    CachyPlaceholderMessage {
         anchors.centerIn: parent
-        width: parent.width - Kirigami.Units.gridUnit * 4
+        width: parent.width - 64
         visible: loader.failed
-        icon.name: "dialog-error"
+        iconName: "dialog-error"
         text: i18nc("@info", "This font could not be loaded")
     }
 

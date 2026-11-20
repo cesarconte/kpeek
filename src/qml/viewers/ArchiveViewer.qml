@@ -6,14 +6,14 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
-import org.kde.kirigami as Kirigami
+import CachyOS.UI
 import io.github.iamandelib.kpeek
 
 // Contents listing of archives.
 Rectangle {
     readonly property Flickable scrollTarget: list
 
-    color: Kirigami.Theme.backgroundColor
+    color: CachyPalette.sheetBackground
 
     ArchiveModel {
         id: archive
@@ -27,16 +27,16 @@ Rectangle {
 
         QQC2.Label {
             Layout.fillWidth: true
-            Layout.margins: Kirigami.Units.largeSpacing
+            Layout.margins: CachyTheme.marginCard
             text: archive.incomplete
                 ? i18ncp("@info archive summary", "The archive is damaged or incomplete; %1 file could be read", "The archive is damaged or incomplete; %1 files could be read", archive.fileCount)
                 : archive.truncated
                 ? i18ncp("@info archive summary", "First %1 entry listed; the archive has more", "First %1 entries listed; the archive has more", archive.maxEntries)
                 : i18ncp("@info archive summary", "%1 file, %2 uncompressed", "%1 files, %2 uncompressed", archive.fileCount, archive.totalSizeText)
-            opacity: 0.7
+            color: CachyTheme.textSecondary
         }
 
-        Kirigami.Separator {
+        CachyDivider {
             Layout.fillWidth: true
         }
 
@@ -50,7 +50,6 @@ Rectangle {
                 model: archive
                 reuseItems: true
 
-                // A plain row rather than an ItemDelegate: entries aren't clickable, and archives can hold thousands.
                 delegate: RowLayout {
                     id: row
 
@@ -61,50 +60,54 @@ Rectangle {
                     required property string iconName
 
                     width: ListView.view.width
-                    height: Kirigami.Units.gridUnit * 1.6
-                    spacing: Kirigami.Units.smallSpacing
+                    height: 28
+                    spacing: CachyTheme.spacingSmall
 
-                    Kirigami.Icon {
-                        source: row.iconName
+                    CachyIcon {
+                        name: row.iconName
                         fallback: "unknown"
-                        Layout.leftMargin: Kirigami.Units.largeSpacing + row.depth * Kirigami.Units.gridUnit
-                        Layout.preferredWidth: Kirigami.Units.iconSizes.small
-                        Layout.preferredHeight: Kirigami.Units.iconSizes.small
+                        colored: false
+                        Layout.leftMargin: CachyTheme.marginCard + row.depth * 16
+                        size: 16
                     }
-                    QQC2.Label {
+                    Text {
                         id: nameLabel
                         text: row.name
-                        textFormat: Text.PlainText // entry names come from the archive: never render them as markup
+                        textFormat: Text.PlainText
                         elide: Text.ElideMiddle
+                        color: CachyTheme.textPrimary
+                        font.pixelSize: 12
                         Layout.fillWidth: true
 
                         HoverHandler {
                             id: hover
                         }
-                        // The attached ToolTip has no textFormat; escaping keeps it from reading markup.
-                        QQC2.ToolTip.text: row.path.replace(/&/g, "&amp;").replace(/</g, "&lt;")
-                        QQC2.ToolTip.visible: hover.hovered && nameLabel.truncated
+                        CachyTooltip {
+                            visible: hover.hovered && nameLabel.truncated
+                            text: row.path
+                        }
                     }
-                    QQC2.Label {
+                    Text {
                         text: row.sizeText
-                        opacity: 0.7
-                        Layout.rightMargin: Kirigami.Units.largeSpacing
+                        color: CachyTheme.textSecondary
+                        font.pixelSize: 12
+                        Layout.rightMargin: CachyTheme.marginCard
                     }
                 }
             }
         }
     }
 
-    QQC2.BusyIndicator {
+    CachyBusyIndicator {
         anchors.centerIn: parent
         running: archive.loading
     }
 
-    Kirigami.PlaceholderMessage {
+    CachyPlaceholderMessage {
         anchors.centerIn: parent
-        width: parent.width - Kirigami.Units.gridUnit * 4
+        width: parent.width - 64
         visible: archive.failed
-        icon.name: "dialog-error"
+        iconName: "dialog-error"
         text: i18nc("@info", "This archive could not be read")
     }
 }

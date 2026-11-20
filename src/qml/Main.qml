@@ -7,7 +7,6 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Controls as QQC2
 import QtQuick.Layouts
-import org.kde.kirigami as Kirigami
 import CachyOS.UI
 import io.github.iamandelib.kpeek
 
@@ -15,11 +14,10 @@ CachyWindow {
     id: root
 
     title: PeekController.fileName
-    // Fits small screens (e.g. 1366×768 at 125%) with room to spare.
-    width: Math.min(Kirigami.Units.gridUnit * 48, Screen.desktopAvailableWidth * 0.85)
-    height: Math.min(Kirigami.Units.gridUnit * 32, Screen.desktopAvailableHeight * 0.85)
-    minimumWidth: Kirigami.Units.gridUnit * 20
-    minimumHeight: Kirigami.Units.gridUnit * 12
+    width: Math.min(768, Screen.desktopAvailableWidth * 0.85)
+    height: Math.min(512, Screen.desktopAvailableHeight * 0.85)
+    minimumWidth: 320
+    minimumHeight: 192
     visible: false
 
     // Closing the window closes the preview, which quits KPeek.
@@ -32,82 +30,13 @@ CachyWindow {
     // 1. HEADER LEADING (Segmented Previous / Next Chevron Pill)
     // =========================================================================
     headerLeading: [
-        Rectangle {
-            height: 26
-            width: 58
-            radius: 6
-            color: CachyTheme.withAlpha(CachyTheme.textPrimary, 0.06)
-            border.width: 1
-            border.color: CachyTheme.specularBorder
-            opacity: PeekController.count > 1 ? 1.0 : 0.35
-
-            Row {
-                anchors.fill: parent
-
-                // Previous (<)
-                Item {
-                    width: 28
-                    height: 26
-
-                    Kirigami.Icon {
-                        anchors.centerIn: parent
-                        source: "go-previous"
-                        width: 14
-                        height: 14
-                        opacity: prevTap.pressed ? 0.5 : (prevHover.hovered ? 1.0 : 0.75)
-                    }
-
-                    HoverHandler {
-                        id: prevHover
-                        enabled: PeekController.count > 1
-                        cursorShape: Qt.PointingHandCursor
-                    }
-                    TapHandler {
-                        id: prevTap
-                        enabled: PeekController.count > 1
-                        onTapped: PeekController.previous()
-                    }
-
-                    QQC2.ToolTip.text: i18nc("@action:button", "Previous")
-                    QQC2.ToolTip.visible: prevHover.hovered
-                }
-
-                // Vertical Divider
-                Rectangle {
-                    width: 1
-                    height: 14
-                    anchors.verticalCenter: parent.verticalCenter
-                    color: CachyTheme.specularBorder
-                }
-
-                // Next (>)
-                Item {
-                    width: 28
-                    height: 26
-
-                    Kirigami.Icon {
-                        anchors.centerIn: parent
-                        source: "go-next"
-                        width: 14
-                        height: 14
-                        opacity: nextTap.pressed ? 0.5 : (nextHover.hovered ? 1.0 : 0.75)
-                    }
-
-                    HoverHandler {
-                        id: nextHover
-                        enabled: PeekController.count > 1
-                        cursorShape: Qt.PointingHandCursor
-                    }
-                    TapHandler {
-                        id: nextTap
-                        enabled: PeekController.count > 1
-                        onTapped: PeekController.next()
-                    }
-
-                    QQC2.ToolTip.text: i18nc("@action:button", "Next")
-                    QQC2.ToolTip.visible: nextHover.hovered
-                }
-            }
+        CachyNavigationButtons {
+            anchors.verticalCenter: parent.verticalCenter
+            canGoBack: PeekController.count > 1
+            canGoForward: PeekController.count > 1
+            opacity: PeekController.count > 1 ? 1.0 : 0.4
+            onBackClicked: PeekController.previous()
+            onForwardClicked: PeekController.next()
         }
     ]
 
@@ -118,11 +47,11 @@ CachyWindow {
         RowLayout {
             spacing: 6
 
-            Kirigami.Icon {
-                source: PeekController.iconName
+            CachyIcon {
+                name: PeekController.iconName
                 fallback: "unknown"
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
+                size: 16
+                colored: false
             }
 
             Text {
@@ -170,6 +99,7 @@ CachyWindow {
 
                 // Reset Zoom button
                 Rectangle {
+                    id: resetBtn
                     visible: Math.abs(input.zoom - 1) > 0.001
                     width: 26
                     height: 26
@@ -179,11 +109,11 @@ CachyWindow {
                     border.color: CachyTheme.specularBorder
                     anchors.verticalCenter: parent.verticalCenter
 
-                    Kirigami.Icon {
+                    CachyIcon {
                         anchors.centerIn: parent
-                        source: "edit-reset"
-                        width: 14
-                        height: 14
+                        name: "edit-reset"
+                        size: 14
+                        color: CachyTheme.textPrimary
                     }
 
                     HoverHandler {
@@ -194,8 +124,10 @@ CachyWindow {
                         onTapped: input.zoom = 1
                     }
 
-                    QQC2.ToolTip.text: i18nc("@info:tooltip", "Reset zoom (Ctrl+0)")
-                    QQC2.ToolTip.visible: resetHover.hovered
+                    CachyTooltip {
+                        visible: resetHover.hovered
+                        text: i18nc("@info:tooltip", "Reset zoom (Ctrl+0)")
+                    }
                 }
 
                 // Zoom Level Pill (- % +)
@@ -215,16 +147,17 @@ CachyWindow {
 
                         // Zoom Out (-)
                         Item {
+                            id: zoomOutBtn
                             width: 24
                             height: 24
                             anchors.verticalCenter: parent.verticalCenter
                             opacity: input.zoom > input.minZoom ? (zoomOutHover.hovered ? 1.0 : 0.8) : 0.35
 
-                            Kirigami.Icon {
+                            CachyIcon {
                                 anchors.centerIn: parent
-                                source: "zoom-out"
-                                width: 13
-                                height: 13
+                                name: "zoom-out"
+                                size: 13
+                                color: CachyTheme.textPrimary
                             }
 
                             HoverHandler {
@@ -237,8 +170,10 @@ CachyWindow {
                                 onTapped: input.zoomBy(-1)
                             }
 
-                            QQC2.ToolTip.text: i18nc("@info:tooltip", "Zoom out (Ctrl+−)")
-                            QQC2.ToolTip.visible: zoomOutHover.hovered
+                            CachyTooltip {
+                                visible: zoomOutHover.hovered
+                                text: i18nc("@info:tooltip", "Zoom out (Ctrl+−)")
+                            }
                         }
 
                         // Zoom % label
@@ -263,16 +198,17 @@ CachyWindow {
 
                         // Zoom In (+)
                         Item {
+                            id: zoomInBtn
                             width: 24
                             height: 24
                             anchors.verticalCenter: parent.verticalCenter
                             opacity: input.zoom < input.maxZoom ? (zoomInHover.hovered ? 1.0 : 0.8) : 0.35
 
-                            Kirigami.Icon {
+                            CachyIcon {
                                 anchors.centerIn: parent
-                                source: "zoom-in"
-                                width: 13
-                                height: 13
+                                name: "zoom-in"
+                                size: 13
+                                color: CachyTheme.textPrimary
                             }
 
                             HoverHandler {
@@ -285,8 +221,10 @@ CachyWindow {
                                 onTapped: input.zoomBy(1)
                             }
 
-                            QQC2.ToolTip.text: i18nc("@info:tooltip", "Zoom in (Ctrl++)")
-                            QQC2.ToolTip.visible: zoomInHover.hovered
+                            CachyTooltip {
+                                visible: zoomInHover.hovered
+                                text: i18nc("@info:tooltip", "Zoom in (Ctrl++)")
+                            }
                         }
                     }
                 }
@@ -302,8 +240,11 @@ CachyWindow {
                 leftPadding: 14
                 rightPadding: 14
                 onClicked: PeekController.openExternally()
-                QQC2.ToolTip.text: i18nc("@info:tooltip", "Open with the default application (Enter)")
-                QQC2.ToolTip.visible: openButton.hovered
+
+                CachyTooltip {
+                    visible: openButton.hovered
+                    text: i18nc("@info:tooltip", "Open with the default application (Enter)")
+                }
             }
         }
     ]
