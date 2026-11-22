@@ -111,9 +111,10 @@ Rectangle {
         visible: root.document.pageCount > 0
         width: pageLabel.implicitWidth + 24
         height: 26
-        radius: CachyTheme.radiusSmall
+        radius: 13
         color: CachyPalette.surfacePill
-        border.color: root.borderColor
+        border.width: 1
+        border.color: CachyPalette.specularBorder
 
         Text {
             id: pageLabel
@@ -123,7 +124,7 @@ Rectangle {
             anchors.centerIn: parent
             font.pixelSize: 11
             font.weight: Font.Medium
-            color: CachyTheme.textPrimary
+            color: CachyPalette.text
             text: i18nc("@info page position", "Page %1 of %2", current + 1, root.document.pageCount)
         }
     }

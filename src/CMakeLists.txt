@@ -73,6 +73,7 @@ target_link_libraries(kpeek PRIVATE
     KF6::Crash
     KF6::DBusAddons
     KF6::WindowSystem
+    KF6::Service
 )
 
 install(TARGETS kpeek ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})

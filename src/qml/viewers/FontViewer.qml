@@ -47,7 +47,7 @@ Rectangle {
                 font.family: loader.font.family
                 font.styleName: loader.font.styleName
                 font.pointSize: 18 * root.zoom
-                color: CachyTheme.textPrimary
+                color: CachyPalette.text
                 wrapMode: Text.Wrap
                 Layout.fillWidth: true
                 Layout.leftMargin: CachyTheme.marginCard
@@ -63,7 +63,7 @@ Rectangle {
                     font.family: loader.font.family
                     font.styleName: loader.font.styleName
                     font.pointSize: modelData * root.zoom
-                    color: CachyTheme.textPrimary
+                    color: CachyPalette.text
                     elide: Text.ElideRight
                     Layout.fillWidth: true
                     Layout.leftMargin: CachyTheme.marginCard

@@ -19,6 +19,18 @@ CachyWindow {
     minimumWidth: 320
     minimumHeight: 192
     visible: false
+    showTrafficLights: true
+    showTitle: false
+    showTitleBarDivider: false
+    cornerRadius: CachyTheme.radiusWindow
+
+    function toggleFullScreen() {
+        if (root.visibility === Window.FullScreen) {
+            root.showNormal();
+        } else {
+            root.showFullScreen();
+        }
+    }
 
     // Closing the window closes the preview, which quits KPeek.
     onClosing: close => {
@@ -32,6 +44,7 @@ CachyWindow {
     headerLeading: [
         CachyNavigationButtons {
             anchors.verticalCenter: parent.verticalCenter
+            visible: PeekController.count > 1
             canGoBack: PeekController.count > 1
             canGoForward: PeekController.count > 1
             opacity: PeekController.count > 1 ? 1.0 : 0.4
@@ -45,6 +58,7 @@ CachyWindow {
     // =========================================================================
     headerCenter: [
         RowLayout {
+            anchors.centerIn: parent
             spacing: 6
 
             CachyIcon {
@@ -59,16 +73,17 @@ CachyWindow {
                 textFormat: Text.PlainText
                 font.pixelSize: 13
                 font.weight: Font.DemiBold
-                color: CachyTheme.textPrimary
+                color: CachyPalette.text
                 elide: Text.ElideMiddle
-                Layout.fillWidth: true
-                Layout.minimumWidth: 0
+                Layout.maximumWidth: Math.max(120, parent.width - 200)
             }
 
             Rectangle {
                 visible: PeekController.count > 1
-                radius: 8
-                color: CachyTheme.withAlpha(CachyTheme.textPrimary, 0.08)
+                radius: 9
+                color: CachyPalette.isDark ? Qt.rgba(1, 1, 1, 0.12) : Qt.rgba(0, 0, 0, 0.06)
+                border.width: 1
+                border.color: CachyPalette.specularBorder
                 implicitWidth: countLabel.implicitWidth + 12
                 implicitHeight: 18
 
@@ -78,46 +93,60 @@ CachyWindow {
                     text: i18nc("@info position in file list", "%1 / %2", PeekController.index + 1, PeekController.count)
                     font.pixelSize: 11
                     font.weight: Font.Medium
-                    color: CachyTheme.textSecondary
+                    color: CachyPalette.textSecondary
                 }
             }
         }
     ]
 
     // =========================================================================
-    // 3. HEADER ACTIONS (Zoom Controls + Open Button at 18px margin)
+    // 3. HEADER ACTIONS (Zoom Controls + Open with... + Capsule Actions Group)
     // =========================================================================
     headerActions: [
         Row {
-            spacing: 12
+            spacing: 8
+            anchors.verticalCenter: parent.verticalCenter
 
-            // Zoom Controls Group
-            Row {
+            // Zoom Controls Capsule Group (macOS Golden Gate Quick Look pattern)
+            CachyToolbarGroup {
                 visible: input.zoomable
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: 4
 
-                // Reset Zoom button
+                // Zoom Out (-)
+                CachyToolbarButton {
+                    iconName: "zoom-out"
+                    pillStyle: false
+                    enabled: input.zoom > input.minZoom
+                    tooltipText: i18nc("@info:tooltip", "Zoom out (Ctrl+−)")
+                    onClicked: input.zoomBy(-1)
+                }
+
+                // Reset Zoom Label / Button (%)
                 Rectangle {
-                    id: resetBtn
-                    visible: Math.abs(input.zoom - 1) > 0.001
-                    width: 26
-                    height: 26
-                    radius: 6
-                    color: resetHover.hovered ? CachyTheme.cardBackgroundHover : CachyTheme.withAlpha(CachyTheme.textPrimary, 0.05)
-                    border.width: 1
-                    border.color: CachyTheme.specularBorder
+                    width: zoomLabelMetrics.advanceWidth + 10
+                    height: 22
+                    radius: 4
+                    color: zoomResetHover.hovered ? CachyPalette.cardBackgroundHover : "transparent"
                     anchors.verticalCenter: parent.verticalCenter
 
-                    CachyIcon {
+                    Text {
+                        id: zoomLabel
                         anchors.centerIn: parent
-                        name: "edit-reset"
-                        size: 14
-                        color: CachyTheme.textPrimary
+                        text: i18nc("@info zoom level", "%1%", Math.round(input.zoom * 100))
+                        font.pixelSize: 11
+                        font.weight: Font.Medium
+                        font.features: { "tnum": 1 }
+                        color: Math.abs(input.zoom - 1) > 0.001 ? CachyTheme.accentColor : CachyPalette.textSecondary
+                    }
+
+                    TextMetrics {
+                        id: zoomLabelMetrics
+                        font: zoomLabel.font
+                        text: i18nc("@info zoom level", "%1%", 8888)
                     }
 
                     HoverHandler {
-                        id: resetHover
+                        id: zoomResetHover
                         cursorShape: Qt.PointingHandCursor
                     }
                     TapHandler {
@@ -125,108 +154,18 @@ CachyWindow {
                     }
 
                     CachyTooltip {
-                        visible: resetHover.hovered
+                        visible: zoomResetHover.hovered
                         text: i18nc("@info:tooltip", "Reset zoom (Ctrl+0)")
                     }
                 }
 
-                // Zoom Level Pill (- % +)
-                Rectangle {
-                    height: 26
-                    radius: 6
-                    color: CachyTheme.withAlpha(CachyTheme.textPrimary, 0.06)
-                    border.width: 1
-                    border.color: CachyTheme.specularBorder
-                    anchors.verticalCenter: parent.verticalCenter
-                    implicitWidth: zoomRow.implicitWidth + 8
-
-                    Row {
-                        id: zoomRow
-                        anchors.centerIn: parent
-                        spacing: 2
-
-                        // Zoom Out (-)
-                        Item {
-                            id: zoomOutBtn
-                            width: 24
-                            height: 24
-                            anchors.verticalCenter: parent.verticalCenter
-                            opacity: input.zoom > input.minZoom ? (zoomOutHover.hovered ? 1.0 : 0.8) : 0.35
-
-                            CachyIcon {
-                                anchors.centerIn: parent
-                                name: "zoom-out"
-                                size: 13
-                                color: CachyTheme.textPrimary
-                            }
-
-                            HoverHandler {
-                                id: zoomOutHover
-                                enabled: input.zoom > input.minZoom
-                                cursorShape: Qt.PointingHandCursor
-                            }
-                            TapHandler {
-                                enabled: input.zoom > input.minZoom
-                                onTapped: input.zoomBy(-1)
-                            }
-
-                            CachyTooltip {
-                                visible: zoomOutHover.hovered
-                                text: i18nc("@info:tooltip", "Zoom out (Ctrl+−)")
-                            }
-                        }
-
-                        // Zoom % label
-                        Text {
-                            id: zoomLabel
-                            text: i18nc("@info zoom level", "%1%", Math.round(input.zoom * 100))
-                            font.pixelSize: 11
-                            font.weight: Font.Medium
-                            font.features: { "tnum": 1 }
-                            color: CachyTheme.textSecondary
-                            horizontalAlignment: Text.AlignHCenter
-                            verticalAlignment: Text.AlignVCenter
-                            width: zoomLabelMetrics.advanceWidth + 8
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            TextMetrics {
-                                id: zoomLabelMetrics
-                                font: zoomLabel.font
-                                text: i18nc("@info zoom level", "%1%", 8888)
-                            }
-                        }
-
-                        // Zoom In (+)
-                        Item {
-                            id: zoomInBtn
-                            width: 24
-                            height: 24
-                            anchors.verticalCenter: parent.verticalCenter
-                            opacity: input.zoom < input.maxZoom ? (zoomInHover.hovered ? 1.0 : 0.8) : 0.35
-
-                            CachyIcon {
-                                anchors.centerIn: parent
-                                name: "zoom-in"
-                                size: 13
-                                color: CachyTheme.textPrimary
-                            }
-
-                            HoverHandler {
-                                id: zoomInHover
-                                enabled: input.zoom < input.maxZoom
-                                cursorShape: Qt.PointingHandCursor
-                            }
-                            TapHandler {
-                                enabled: input.zoom < input.maxZoom
-                                onTapped: input.zoomBy(1)
-                            }
-
-                            CachyTooltip {
-                                visible: zoomInHover.hovered
-                                text: i18nc("@info:tooltip", "Zoom in (Ctrl++)")
-                            }
-                        }
-                    }
+                // Zoom In (+)
+                CachyToolbarButton {
+                    iconName: "zoom-in"
+                    pillStyle: false
+                    enabled: input.zoom < input.maxZoom
+                    tooltipText: i18nc("@info:tooltip", "Zoom in (Ctrl++)")
+                    onClicked: input.zoomBy(1)
                 }
             }
 
@@ -234,16 +173,46 @@ CachyWindow {
             CachyButton {
                 id: openButton
                 anchors.verticalCenter: parent.verticalCenter
-                text: i18nc("@action:button", "Open")
+                text: PeekController.defaultAppName.length > 0
+                    ? i18nc("@action:button", "Open with %1", PeekController.defaultAppName)
+                    : i18nc("@action:button", "Open")
+                iconName: PeekController.defaultAppIcon.length > 0 ? PeekController.defaultAppIcon : "document-open"
                 primary: true
+                pillStyle: true
                 implicitHeight: 28
-                leftPadding: 14
+                leftPadding: 12
                 rightPadding: 14
                 onClicked: PeekController.openExternally()
 
                 CachyTooltip {
                     visible: openButton.hovered
-                    text: i18nc("@info:tooltip", "Open with the default application (Enter)")
+                    text: i18nc("@info:tooltip", "Open with %1 (Enter)", PeekController.defaultAppName.length > 0 ? PeekController.defaultAppName : i18n("default application"))
+                }
+            }
+
+            // Actions Capsule Group (Share + Fullscreen)
+            CachyToolbarGroup {
+                anchors.verticalCenter: parent.verticalCenter
+
+                // Share button (copies path to clipboard)
+                CachyToolbarButton {
+                    iconName: "share"
+                    pillStyle: false
+                    tooltipText: i18nc("@action:button", "Copy path to clipboard")
+                    onClicked: {
+                        PeekController.share();
+                        statusToast.show(i18nc("@info:status", "Path copied to clipboard"), "success", 2000);
+                    }
+                }
+
+                // Fullscreen toggle button
+                CachyToolbarButton {
+                    iconName: root.visibility === Window.FullScreen ? "view-restore" : "view-fullscreen"
+                    pillStyle: false
+                    tooltipText: root.visibility === Window.FullScreen
+                        ? i18nc("@action:button", "Exit Full Screen (Esc / F)")
+                        : i18nc("@action:button", "Full Screen (F)")
+                    onClicked: root.toggleFullScreen()
                 }
             }
         }
@@ -281,7 +250,19 @@ CachyWindow {
     ]
 
     // =========================================================================
-    // 5. CONTROLLER & SHORTCUT CONNECTIONS
+    // 5. OVERLAYS (Status Feedback Toast)
+    // =========================================================================
+    overlay: [
+        CachyToast {
+            id: statusToast
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 24
+        }
+    ]
+
+    // =========================================================================
+    // 6. CONTROLLER & SHORTCUT CONNECTIONS
     // =========================================================================
     Connections {
         target: PeekController
@@ -307,7 +288,17 @@ CachyWindow {
 
     Shortcut {
         sequences: [StandardKey.Cancel, "Space", "Meta+Space", "Q"]
-        onActivated: PeekController.close()
+        onActivated: {
+            if (root.visibility === Window.FullScreen) {
+                root.showNormal();
+            } else {
+                PeekController.close();
+            }
+        }
+    }
+    Shortcut {
+        sequences: ["F", "F11"]
+        onActivated: root.toggleFullScreen()
     }
     Shortcut {
         sequences: ["Right"]

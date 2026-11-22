@@ -7,17 +7,20 @@
 #include "viewerresolver.h"
 #include "workerpool.h"
 
+#include <KApplicationTrader>
 #include <KFormat>
 #include <KLocalizedString>
 #include <KWindowShadow>
 #include <KWindowSystem>
 
+#include <QClipboard>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDesktopServices>
 #include <QDir>
 #include <QDirIterator>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QImageReader>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -188,6 +191,15 @@ void PeekController::openExternally()
     }
 }
 
+void PeekController::share()
+{
+    if (url().isValid()) {
+        if (auto *clip = QGuiApplication::clipboard()) {
+            clip->setText(url().isLocalFile() ? url().toLocalFile() : url().toString());
+        }
+    }
+}
+
 void PeekController::raiseWindow()
 {
     if (!m_window) {
@@ -223,6 +235,10 @@ void PeekController::updateCurrent()
     m_isFolder = info.isDir();
     m_fileSize = info.isFile() ? info.size() : 0;
     m_modified = info.lastModified();
+
+    const auto service = KApplicationTrader::preferredService(mime.name());
+    m_defaultAppName = service ? service->name() : QString();
+    m_defaultAppIcon = service ? service->icon() : QString();
 
     // Shown while images and video load, and in place of the icon for files without a viewer.
     const bool wantsThumbnail = m_viewer == QLatin1String("Image") || m_viewer == QLatin1String("Media") || m_viewer == QLatin1String("Office")
@@ -350,6 +366,16 @@ bool PeekController::lowMemory() const
 QUrl PeekController::thumbnail() const
 {
     return m_thumbnail;
+}
+
+QString PeekController::defaultAppName() const
+{
+    return m_defaultAppName;
+}
+
+QString PeekController::defaultAppIcon() const
+{
+    return m_defaultAppIcon;
 }
 
 qint64 PeekController::modelBytes() const

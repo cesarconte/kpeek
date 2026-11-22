@@ -63,7 +63,7 @@ Rectangle {
             }
             Text {
                 text: root.converting ? i18nc("@info", "Preparing the full preview…") : i18nc("@info", "First page only.")
-                color: CachyTheme.textSecondary
+                color: CachyPalette.textSecondary
                 font.pixelSize: 12
             }
             CachyButton {
@@ -86,7 +86,7 @@ Rectangle {
         }
         Text {
             text: i18nc("@info", "Preparing preview…")
-            color: CachyTheme.textPrimary
+            color: CachyPalette.text
             font.pixelSize: 13
             Layout.alignment: Qt.AlignHCenter
         }

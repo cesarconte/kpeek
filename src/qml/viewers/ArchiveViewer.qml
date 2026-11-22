@@ -33,7 +33,7 @@ Rectangle {
                 : archive.truncated
                 ? i18ncp("@info archive summary", "First %1 entry listed; the archive has more", "First %1 entries listed; the archive has more", archive.maxEntries)
                 : i18ncp("@info archive summary", "%1 file, %2 uncompressed", "%1 files, %2 uncompressed", archive.fileCount, archive.totalSizeText)
-            color: CachyTheme.textSecondary
+            color: CachyPalette.textSecondary
         }
 
         CachyDivider {
@@ -75,7 +75,7 @@ Rectangle {
                         text: row.name
                         textFormat: Text.PlainText
                         elide: Text.ElideMiddle
-                        color: CachyTheme.textPrimary
+                        color: CachyPalette.text
                         font.pixelSize: 12
                         Layout.fillWidth: true
 
@@ -89,7 +89,7 @@ Rectangle {
                     }
                     Text {
                         text: row.sizeText
-                        color: CachyTheme.textSecondary
+                        color: CachyPalette.textSecondary
                         font.pixelSize: 12
                         Layout.rightMargin: CachyTheme.marginCard
                     }

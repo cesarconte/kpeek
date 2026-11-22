@@ -54,6 +54,9 @@ class PeekController : public QObject
     Q_PROPERTY(bool lowMemory READ lowMemory CONSTANT)
     /// Dolphin's cached thumbnail of the file, shown instantly while the real content loads; may be empty.
     Q_PROPERTY(QUrl thumbnail READ thumbnail NOTIFY currentChanged)
+    /// Preferred external application name to open this file (e.g. "Gwenview", "Okular", "Kate").
+    Q_PROPERTY(QString defaultAppName READ defaultAppName NOTIFY currentChanged)
+    Q_PROPERTY(QString defaultAppIcon READ defaultAppIcon NOTIFY currentChanged)
 
 public:
     // Not default-constructible on purpose: QML must use create() and get the one instance from main().
@@ -87,12 +90,15 @@ public:
     qreal devicePixelRatio() const;
     int maxTextureSize() const;
     QUrl thumbnail() const;
+    QString defaultAppName() const;
+    QString defaultAppIcon() const;
 
 public Q_SLOTS:
     void next();
     void previous();
     void close();
     void openExternally();
+    void share();
 
 Q_SIGNALS:
     void currentChanged();
@@ -127,5 +133,7 @@ private:
     QSize m_imageSize; ///< natural size, EXIF orientation applied; only set for the image viewer
     bool m_animated = false;
     QUrl m_thumbnail;
+    QString m_defaultAppName;
+    QString m_defaultAppIcon;
     int m_maxTextureSize = 8192; // a safe guess until the GPU says otherwise
 };

@@ -60,19 +60,19 @@ Rectangle {
             Text {
                 text: i18nc("@label", "Type:")
                 font.pixelSize: 12
-                color: CachyTheme.textSecondary
+                color: CachyPalette.textSecondary
                 Layout.alignment: Qt.AlignRight
             }
             Text {
                 text: PeekController.mimeComment
                 font.pixelSize: 12
-                color: CachyTheme.textPrimary
+                color: CachyPalette.text
             }
 
             Text {
                 text: PeekController.isFolder ? i18nc("@label", "Contains:") : i18nc("@label", "Size:")
                 font.pixelSize: 12
-                color: CachyTheme.textSecondary
+                color: CachyPalette.textSecondary
                 Layout.alignment: Qt.AlignRight
                 visible: sizeValue.visible
             }
@@ -80,14 +80,14 @@ Rectangle {
                 id: sizeValue
                 text: PeekController.sizeText
                 font.pixelSize: 12
-                color: CachyTheme.textPrimary
+                color: CachyPalette.text
                 visible: text.length > 0
             }
 
             Text {
                 text: i18nc("@label", "Modified:")
                 font.pixelSize: 12
-                color: CachyTheme.textSecondary
+                color: CachyPalette.textSecondary
                 Layout.alignment: Qt.AlignRight
                 visible: modValue.visible
             }
@@ -95,7 +95,7 @@ Rectangle {
                 id: modValue
                 text: PeekController.modified.toLocaleString(Qt.locale(), Locale.ShortFormat)
                 font.pixelSize: 12
-                color: CachyTheme.textPrimary
+                color: CachyPalette.text
                 visible: !isNaN(PeekController.modified)
             }
         }
